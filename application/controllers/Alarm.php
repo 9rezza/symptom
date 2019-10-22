@@ -12,7 +12,7 @@ class Alarm extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->database();
 		$this->load->model('main_model');
-		$this->load->model('scada_model');
+		$this->load->model('alarm_model');
 		$this->load->library('template');
         $this->load->library('session');
         $this->load->library('datatables');
@@ -56,8 +56,96 @@ class Alarm extends CI_Controller {
 		foreach ($data['textbox'] as $t){
 			array_push($data['position'], '#'.$t->element.'{left:'.$t->x.'px; top:'.$t->y.'px; z-index:'.$t->z.'; color:'.$t->color.';}');
 		}
+		$data['line'] = $this->alarm_model->get_all_line()->result();
 		$this->template->display('content/alarm', $data);
 	}
+
+	public function upload_action_alarm()
+	{
+        $config = array(
+            'upload_path' => "./uploads/",
+            'allowed_types' => "xlsx",
+            'overwrite' => TRUE,
+            'max_size' => "5120000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+        );
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+		if($this->upload->do_upload('actionAlarmFile')) {
+			$data = [];
+			$file_data = $this->upload->data();
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load($file_data['full_path']);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			foreach($sheetData as $key=>$row){
+				if($key > 0){
+					array_push($data, array(
+					'code'=>$row[0],
+					'note'=>$row[1],
+					'action'=>nl2br($row[2]),
+					));
+				}
+			}
+			if($this->alarm_model->upload_action_alarm($data)){
+				$data["status"] = "success";
+				$data["message"] = "success";
+				echo json_encode($data);
+			} else {
+				$data["status"] = "error";
+				$data["message"] = "File is broken or wrong format";
+				echo json_encode($data);
+			}
+		} else {
+			$data["status"] = "error";
+			$data["message"] = $this->upload->display_errors();
+			echo json_encode($data);
+		}
+		
+	}
+
+	public function get_alarm_by_machine_code()
+	{
+		$code = $this->input->post('code');
+		$machine = $this->alarm_model->get_machine_by_code($code)->row();
+		$date = date('Y-m-d 00:00:00', strtotime('-7 days'));
+		$data = $this->alarm_model->get_history_alarm_by_line_machine($machine->line, $machine->id, $date)->result();
+		echo json_encode($data);
+	}
+
+
+	
+
+
+
+
+	public function get_alarm_by_code()
+	{
+		$code = $this->input->post('code');
+		$data = $this->alarm_model->get_alarm_by_code($code)->row();
+		echo json_encode($data);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

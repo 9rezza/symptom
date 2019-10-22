@@ -8,6 +8,7 @@ class Symptom_model extends CI_Model {
     {
         $this->db->select('*');
         $this->db->from('line');
+        $this->db->where('id','1');
         return $this->db->get();                                    
     }
                         
@@ -20,10 +21,25 @@ class Symptom_model extends CI_Model {
         return $this->db->get();                                    
     }
                         
+    public function get_machine_line($line_id)
+    {
+        $this->db->select('*');
+        $this->db->from('machine');
+        $this->db->where('`line.id`', $line_id, false);
+        return $this->db->get();                                    
+    }
+                        
     public function store($data, $modul)
     {
         $this->db->insert($modul, $data);                                
     }
+
+	public function upload_standard($data)
+	{
+		if($this->db->on_duplicate('dies', $data)){
+			return true;
+		}
+	}
                         
     // public function get_latest_120($initial, $end, $modul)
     // {

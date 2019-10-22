@@ -130,12 +130,12 @@
                 </div>
                 <div class="col-sm-5" style="padding-bottom: 8px; text-align:left">
                   <a href="<?=$url?>symptom" type="button" class="btn btn-primary btn-sm" style="width:130px;">
-                    <i class="fa fa-bar-chart" style="font-size: 1.5em"> SYMPTOM</i>
+                    <i class="fa fa-bar-chart" style="font-size: 1.5em"><span style="font-family: arial"> SYMPTOM</span></i>
                   </a>
                 </div>
                 <div class="col-sm-5">
                   <a href="<?=$url?>alarm" type="button" class="btn btn-danger btn-sm" style="width:130px; text-align:left">
-                    <i class="fa fa-warning" style="font-size: 1.5em"> ALARM</i>
+                    <i class="fa fa-warning" style="font-size: 1.5em"><span style="font-family: arial">  ALARM</span></i>
                   </a>
                 </div>
               </div>
@@ -143,6 +143,42 @@
           </div>
           <!-- /.box-header -->
           
+          <style>
+            .alarmBadge{
+              position: fixed;
+              z-index: 9999;
+              border: 2px solid #db3c40;
+              border-radius: 50%;
+              background-color: #db3c40;
+              width: 35px;
+              height: 35px;
+              text-align: center;
+              vertical-align: center;
+              color: white;
+              top: 20px;
+              right: 20px;
+              display:none;
+              font-size: 22px;
+            }
+            .alarmBadge :hover{
+              cursor: pointer;
+            }
+            .alarmBadgeContent{
+              vertical-align: center;
+            }
+            #alarmBadgeCount{
+            }
+            .alert-danger{
+              background-color: #db3c40 !important;
+              /* background-color: #dd4b39 !important; */
+            }
+          </style>
+          <div class="alarmBadge">
+            <div class="alarmBadgeContent">
+              <i class="fa fa-warning"></i>
+              <span id="alarmBadgeCount"><span>
+            </div>
+          </div>
           <?=$_content?>
 
         </div>
@@ -194,6 +230,142 @@
 <script src="<?=$url?>vendor/moment-js/moment.js"></script>
 <script src="<?=$url?>vendor/moment-js/locale/id.js"></script>
 <script src="<?=$url?>vendor/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+
+<script>
+  var alarmMsg
+  wsAlarm = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
+  wsAlarm.onerror = function(error) {console.log('Error detected: ' + error)}
+  wsAlarm.onopen = function(){console.log('websocket connect');/*ws.send("websocket connect");*/}
+  wsAlarm.onclose = function(){console.log('websocket disconnect')}
+  var dies
+  var diesNew
+  var payloadOld
+  var countAlarm = 0
+  wsAlarm.onmessage = function(event){
+    var payload = $.parseJSON(event.data);
+    // console.log(payload);
+    if(payload.length <= 0){
+      if(countAlarm != payload.length){
+        $(document).find('.minimize').parent().hide()
+        $(".alarmBadge").hide()
+      }
+    } else {
+      i = 1
+      alarmMsg = ""
+      ///////////////////////////////////////////////////////////////
+      var checkPayload = false
+      if(countAlarm == payload.length){ //cek jumlah array
+        $.each(payload, function (key, value) {
+          if(payloadOld[key].code == value.code){
+            checkPayload = true //jumlah sama tapi isi array berubah
+            return false
+          }
+        })
+      }
+      // console.log(checkPayload)
+      // console.log(payload)
+      ////////////////////////////////////////////////////////////////
+      if(checkPayload){
+        $.each(payload, function (key, value) {
+          substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
+                date = new Date(substract)
+                duration = ('00' + date.getHours()).slice(-2) + ':' +
+                    ('00' + date.getMinutes()).slice(-2) + ':' +
+                    ('00' + date.getSeconds()).slice(-2)
+          $('.duration-'+value.code).html('('+duration+')')
+        })
+      } else {
+        $.each(payload, function (key, value) {
+          // console.log(key)
+          substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
+                date = new Date(substract)
+                duration = ('00' + date.getHours()).slice(-2) + ':' + 
+                    ('00' + date.getMinutes()).slice(-2) + ':' + 
+                    ('00' + date.getSeconds()).slice(-2)
+          let note = value.note ? value.note : ""
+          alarmMsg += "<div class='col-sm-1 float-left text-right no-padding'>"+
+                        "<span class='code-i'>"+i+". </span> "+
+                      "</div>"
+          alarmMsg += "<div class='col-sm-7 float-left text-left no-padding'>"+
+                        "<span class='code'> "+value.code+" "+note+"</span> "+
+                      "</div>"
+          alarmMsg += "<div class='col-sm-4 float-right'>"+
+                        "<span class='duration duration-"+value.code+"'>("+duration+")</span> "+
+                        "<span class='fa fa-caret-up  caret-"+value.code+"' style='font-size: 1.2em' onClick='toggleAction("+'"'+value.code+'"'+")'></span>"+
+                      "</div>"
+          alarmMsg += "<div class='col-sm-10 col-sm-offset-2 float-left text-left no-padding text-grey action-"+value.code+"' style='display: none; color: #ffff00'>"+
+                        "<span class='code'> "+(value.action ? value.action : "")+"</span> "+
+                      "</div>"
+          // console.log(substract)
+          i++
+        });
+        // $.notifyClose()
+        $(document).find('.minimize').parent().show()
+        $(".alarmBadge").hide()
+        notifyAlarm.update('message', alarmMsg)
+      }
+    }
+    countAlarm = payload.length
+    payloadOld = payload
+  }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////// 
+  function toggleAction(id){
+    $('.action-'+id).toggle()
+    if($('.action-'+id).css('display') == 'block'){
+      $('.caret-'+id).removeClass("fa-caret-up")
+      $('.caret-'+id).addClass("fa-caret-down")
+    } else {
+      $('.caret-'+id).removeClass("fa-caret-down")
+      $('.caret-'+id).addClass("fa-caret-up")
+    }
+  }
+  var notifyAlarm
+  notifyKeep()
+  $('.notifyKeep').hide()
+  function notifyKeep(){
+    notifyAlarm = $.notify(
+      {
+        icon: 'fa fa-warning',
+        title: '<span class="float-left"><b>ALARM!</b></span></br>',
+        message: "",
+        // url: '',
+        // target: '_self',
+      },{
+        type: 'danger',
+        newest_on_top: true,
+        placement: {
+          from: "top",
+          align: "right"
+        },
+        delay: 0,
+        template: '<div data-notify="container" class="notifyKeep col-xs-11 col-sm-4 alert alert-{0}" role="alert">' +
+                    '<button type="button" aria-hidden="true" class="close minimize" style="width: 20px; border: 1px solid black; color: white">-</button>' +
+                    '<span data-notify="icon"></span> ' +
+                    '<span data-notify="title">{1}</span> ' +
+                    '<span data-notify="message">{2}</span>' +
+                    '<div class="progress" data-notify="progressbar">' +
+                      '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                    '</div>' +
+                    '<div class="text-center">' +
+                      // '<a class="btn btn-warning" href="<?=$url.'alarm'?>" target="_self" data-notify="url" style="text-decoration:none">Lihat</a>' +
+                    '</div>' +
+                  '</div>' 
+      }
+    )
+  }
+
+  $(document).on('click','.minimize',function(e){
+    e.preventDefault()
+    $(this).parent().hide()
+    $(".alarmBadge").show()
+  });  
+  $(".alarmBadge").click(function (e) { 
+    e.preventDefault()
+    // notifyKeep()
+    $(document).find('.minimize').parent().show()
+    $(".alarmBadge").hide()
+  });
+</script>
 
 </body>
 </html>

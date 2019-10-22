@@ -40,19 +40,90 @@ class Symptom extends CI_Controller {
 		foreach ($data['textbox'] as $t){
 			array_push($data['position'], '#'.$t->element.'{left:'.$t->x.'px; top:'.$t->y.'px; z-index:'.$t->z.'; color:'.$t->color.';}');
 		}
+
+		$data['line'] = $this->symptom_model->get_all_line()->result();
 		$this->template->display('content/symptom', $data);
 	}
 
 	public function get_data_today()
 	{
-		$modul = "5am1";
-		$initial = date("Y-m-d 06:00:00");
-		$end = date("Y-m-d 06:00:00", strtotime('+1 day'));
+		$modul = $this->input->post('modul');
+		// $initial = date("2019-08-24 06:00:00");
+		// $end = date("2019-08-27 06:00:00", strtotime('+1 day'));
+		$today = date("Y-m-d h:i:s", strtotime('-6 hours'));
+		$initial = date("Y-m-d 06:00:00", strtotime($today));
+		$end = date("Y-m-d 06:00:00", strtotime($today.'+1 day'));
 		$data["motor_1"] = $this->symptom_model->get_data_today($modul."1",$initial,$end)->result();
 		$data["motor_2"] = $this->symptom_model->get_data_today($modul."2",$initial,$end)->result();
 		$data["motor_3"] = $this->symptom_model->get_data_today($modul."3",$initial,$end)->result();
 		$data["motor_4"] = $this->symptom_model->get_data_today($modul."4",$initial,$end)->result();
 		echo json_encode($data);
+	}
+
+	public function get_data()
+	{
+		$modul = $this->input->post('modul');
+		// $initial = date("2019-08-24 06:00:00");
+		// $end = date("2019-08-27 06:00:00", strtotime('+1 day'));
+		$date = date("Y-m-d h:i:s", strtotime($this->input->post('date')));
+		$initial = date("Y-m-d 06:00:00", strtotime($date));
+		$end = date("Y-m-d 06:00:00", strtotime($date.'+1 day'));
+		$data["motor_1"] = $this->symptom_model->get_data_today($modul."1",$initial,$end)->result();
+		$data["motor_2"] = $this->symptom_model->get_data_today($modul."2",$initial,$end)->result();
+		$data["motor_3"] = $this->symptom_model->get_data_today($modul."3",$initial,$end)->result();
+		$data["motor_4"] = $this->symptom_model->get_data_today($modul."4",$initial,$end)->result();
+		echo json_encode($data);
+	}
+
+	public function get_machine_line()
+	{
+		$line_id = $this->input->post("line_id");
+		$feed = $this->symptom_model->get_machine_line($line_id)->result();
+		echo json_encode($feed);
+	}
+
+	public function upload_standard()
+	{
+        $config = array(
+            'upload_path' => "./uploads/",
+            'allowed_types' => "xlsx",
+            'overwrite' => TRUE,
+            'max_size' => "5120000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+        );
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+		if($this->upload->do_upload('standardFile')) {
+			$data = [];
+			$file_data = $this->upload->data();
+			$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+			$spreadsheet = $reader->load($file_data['full_path']);
+			$sheetData = $spreadsheet->getActiveSheet()->toArray();
+			foreach($sheetData as $key=>$row){
+				if($key > 0){
+					array_push($data, array(
+					'code'=>$row[0],
+					'temperature_warning'=>$row[1],
+					'temperature_alarm'=>$row[2],
+					'vibration_warning'=>$row[3],
+					'vibration_alarm'=>$row[4],
+					));
+				}
+			}
+			if($this->symptom_model->upload_standard($data)){
+				$data["status"] = "success";
+				$data["message"] = "success";
+				echo json_encode($data);
+			} else {
+				$data["status"] = "error";
+				$data["message"] = "File is broken or wrong format";
+				echo json_encode($data);
+			}
+		} else {
+			$data["status"] = "error";
+			$data["message"] = $this->upload->display_errors();
+			echo json_encode($data);
+		}
+		
 	}
 
 }

@@ -46,9 +46,9 @@ class Scada extends CI_Controller {
 		$data['title_icon'] = "fa-home";
 		$data['url'] = base_url();
 		$data['hmi'] = base_url('assets/images/hmi/');
-		$data['images'] = $this->main_model->get_images()->result();
-		$data['symbol'] = $this->main_model->get_symbol()->result();
-		$data['textbox'] = $this->main_model->get_textbox()->result();
+		$data['images'] = $this->scada_model->get_images()->result();
+		$data['symbol'] = $this->scada_model->get_symbol()->result();
+		$data['textbox'] = $this->scada_model->get_textbox()->result();
 		$data['position'] = [];
 		$data['line'] = $this->scada_model->get_all_line()->result();
 		foreach ($data['images'] as $s){
