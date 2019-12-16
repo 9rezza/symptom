@@ -135,7 +135,7 @@
             </tr>
           </table> -->
         <!-- </div> -->
-        <div class="col-sm-2">
+        <div class="col-sm-4">
           <button type="submit" class="btn btn-primary" id="updateChart">Show</button>
           <!-- <button type="button" class="btn btn-primary" id="configChart"><i class="fa fa-gear"></i> Config</button> -->
           <a class="btn btn-primary" data-toggle="modal" href='#standardModal'><i class="fa fa-gear"></i> Setting standar</a>
@@ -151,8 +151,8 @@
   </div>
 
   <div class="col-sm-12">
-    <div id="tempChartContainer" style="height: 265px; width: 100%;"></div>
-    <div id="vibeChartContainer" style="height: 265px; width: 100%;"></div>
+    <div id="tempChartContainer" style="height: 310px; width: 100%;"></div>
+    <div id="vibeChartContainer" style="height: 310px; width: 100%;"></div>
     <!-- <div id="chart3" style="height: 140px; width: 45%;"></div>
     <div id="chart4" style="height: 140px; width: 45%;"></div> -->
   </div>
@@ -521,7 +521,7 @@
         if(dies == diesNew){
           // $('#diesActive').html(dies);
         } else {
-          console.log(diesNew)
+          // console.log(diesNew)
           $('#diesActive').html(diesNew);
           temperature_warning = payload.dies.temperature_warning;
           temperature_alarm = payload.dies.temperature_alarm;
@@ -623,6 +623,15 @@
 
 </script>
 
+<?php if($tag){?>
+<script>
+  $(document).ready(function () {
+    $('#line').val('<?=$selected_line?>')
+    $(`#machine`).val('<?=$selected_machine?>')
+    $(`#updateChart`).click()
+  });
+</script>
+<?php } ?>
 
 
 

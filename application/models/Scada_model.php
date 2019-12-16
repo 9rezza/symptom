@@ -84,6 +84,14 @@ class Scada_model extends CI_Model {
 		return $this->db->get();
 	}
 
+	public function get_images_5a()
+	{
+		$this->db->select('*');
+		$this->db->from('images_5a');
+		$this->db->order_by('id', 'DESC');
+		return $this->db->get();
+	}
+
 	public function update_image($id, $data)
 	{
 		$this->db->where('id', $id);

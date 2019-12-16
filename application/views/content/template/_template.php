@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Dashboard</title>
+  <title><?=$title?></title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
@@ -33,6 +33,7 @@
   <link href="<?=$url?>vendor/bootstrap-toggle/bootstrap-toggle.min.css" rel="stylesheet">
   <script src="<?=$url?>vendor/bootstrap-toggle/bootstrap-toggle.min.js"></script>
   <script src="<?=$url?>vendor/bootstrap-notify/bootstrap-notify.min.js"></script>
+  <script src="<?=$url?>vendor/blockui/jquery.blockUI.js"></script>
 
   <style type="text/css">
     .no-padd-side {
@@ -43,6 +44,15 @@
       margin-bottom: 20px;
     }
   </style>
+  <script>
+    // $.blockUI({ message: '<h1><img src="<?=$url?>assets/images/loading.gif" /> Just a moment...</h1>' });
+    $.blockUI.defaults.message = '<img src="<?=$url?>assets/images/loading.gif?<?=rand(0,1000)?>" width="200px"/>'
+    $.blockUI.defaults.css.border = 'none'
+    $.blockUI.defaults.css.backgroundColor = 'none'
+    $(document).ready(function () {
+      // $.blockUI()
+    });
+  </script>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -60,6 +70,9 @@
 
   <!-- Content Wrapper. Contains page content -->
 <style>
+  .content{
+    padding-bottom: 0;    
+  }
   .parent-hmi{
     margin: 0;
     padding: 0;
@@ -114,28 +127,28 @@
   <section class="content">
 
     <div class="row">
-      <div class="col-xs-12">
+      <div class="col-sm-12">
         <div class="box box-solid box-grey">
           <div class="box-header">
-            <div class="col-xs-4 title">
+            <div class="col-sm-6 col-xs-6 title">
               <i class="box-icon fa <?=$title_icon?> fa-3x"></i>
-              <h3 class="box-title"><?=$title?></h3>
+              <h3 class="box-title">&nbsp;<?=$title?></h3>
             </div>
-            <div class="col-sm-3 pull-right" style="padding-left: 120px; text-align:left">
+            <div class="col-sm-6 col-xs-6 pull-right" style="padding-right:0">
               <div class="box-tools pull-right">
-                <div class="col-sm-4" style="padding-right: 8px">
-                  <a href="<?=$url?>shop" type="button" class="btn btn-primary btn-sm">
+                <div class="col-sm-7 col-xs-5" style="padding-right: 0; text-align:right">
+                  <a href="<?=$url?>press_shop" type="button" class="btn btn-primary btn-sm">
                     <i class="fa fa-home" style="font-size: 5em"></i>
                   </a>
                 </div>
-                <div class="col-sm-5" style="padding-bottom: 8px; text-align:left">
-                  <a href="<?=$url?>symptom" type="button" class="btn btn-primary btn-sm" style="width:130px;">
-                    <i class="fa fa-bar-chart" style="font-size: 1.5em"><span style="font-family: arial"> SYMPTOM</span></i>
+                <div class="col-sm-5 col-xs-7" style="padding-bottom: 8px; text-align:left">
+                  <a href="<?=$url?>symptom" type="button" class="btn btn-primary btn-sm" style="width:135px; text-align:left;">
+                    <i class="fa fa-bar-chart" style="font-size: 1.5em"><span style="font-family: arial">&nbsp;SYMPTOM</span></i>
                   </a>
                 </div>
-                <div class="col-sm-5">
-                  <a href="<?=$url?>alarm" type="button" class="btn btn-danger btn-sm" style="width:130px; text-align:left">
-                    <i class="fa fa-warning" style="font-size: 1.5em"><span style="font-family: arial">  ALARM</span></i>
+                <div class="col-sm-5 col-xs-7" style="text-align:left">
+                  <a href="<?=$url?>alarm" type="button" class="btn btn-danger btn-sm" style="width:135px; text-align:left">
+                    <i class="fa fa-warning" style="font-size: 1.5em"><span style="font-family: arial">&nbsp;&nbsp;ALARM</span></i>
                   </a>
                 </div>
               </div>
@@ -172,6 +185,33 @@
               background-color: #db3c40 !important;
               /* background-color: #dd4b39 !important; */
             }
+            .note{
+              left: 20px;
+              color: #39ff09;
+            }
+            .notifyKeep{
+              max-height: 150px;
+              overflow-y: scroll;
+            }
+            .notifyKeep::-webkit-scrollbar-track {
+              border: 1px solid #ff2424;
+              padding: 2px 0;
+              background-color: #7c1f03;
+            }
+
+            .notifyKeep::-webkit-scrollbar {
+              width: 20px;
+            }
+
+            .notifyKeep::-webkit-scrollbar-thumb {
+              border-radius: 10px;
+              box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+              background-color: #e31a0f;
+              border: 1px solid #ff9f9f;
+            }
+            @media(min-height: 480px){
+
+            }
           </style>
           <div class="alarmBadge">
             <div class="alarmBadgeContent">
@@ -197,7 +237,7 @@
     <div class="pull-right hidden-xs">
       Theme by <a href="https://adminlte.io">Almsaeed Studio</a>.</strong>
     </div>
-    <img src="<?=$url?>assets/images/logo_nama.png" height="30" hidden/>
+    <img src="<?=$url?>assets/images/logo_nama.png" height="30"/>
     <strong>&copy; 2019.</strong>
   </footer>
 
@@ -215,8 +255,6 @@
 <script src="<?=$url?>assets/dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="<?=$url?>assets/dist/js/demo.js"></script>
-<!-- BlockUI -->
-<script src="<?=$url?>vendor/blockui/jquery.blockUI.js"></script>
 <!-- jQuery Highchart
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/highcharts-more.js"></script>
@@ -226,6 +264,9 @@
 <script src="https://code.highcharts.com/modules/export-data.js"></script> -->
 
 
+<!-- <script src="<?=$url?>vendor/jquery-cookie/jquery.cookie.js"></script> -->
+<script src="<?=$url?>vendor/js-cookie/js.cookie.min.js"></script>
+<!-- -->
 <script src="<?=$url?>vendor/canvas-js/canvasjs.min.js"></script>
 <script src="<?=$url?>vendor/moment-js/moment.js"></script>
 <script src="<?=$url?>vendor/moment-js/locale/id.js"></script>
@@ -283,11 +324,12 @@
                     ('00' + date.getMinutes()).slice(-2) + ':' + 
                     ('00' + date.getSeconds()).slice(-2)
           let note = value.note ? value.note : ""
+          alarmMsg += "<div class='row row-eq-height '>"
           alarmMsg += "<div class='col-sm-1 float-left text-right no-padding'>"+
                         "<span class='code-i'>"+i+". </span> "+
                       "</div>"
           alarmMsg += "<div class='col-sm-7 float-left text-left no-padding'>"+
-                        "<span class='code'> "+value.code+" "+note+"</span> "+
+                        "<span class='code'> "+value.code+"</span><br/><span class='note'>"+note+"</span> "+
                       "</div>"
           alarmMsg += "<div class='col-sm-4 float-right'>"+
                         "<span class='duration duration-"+value.code+"'>("+duration+")</span> "+
@@ -296,12 +338,25 @@
           alarmMsg += "<div class='col-sm-10 col-sm-offset-2 float-left text-left no-padding text-grey action-"+value.code+"' style='display: none; color: #ffff00'>"+
                         "<span class='code'> "+(value.action ? value.action : "")+"</span> "+
                       "</div>"
-          // console.log(substract)
+          alarmMsg += "</div>"
+          if($('#autoUpdate').is(":checked")){
+            $('.machine.selected').click()
+          }
+          console.log($('#autoUpdate').is(":checked"))
           i++
         });
         // $.notifyClose()
-        $(document).find('.minimize').parent().show()
-        $(".alarmBadge").hide()
+        // Cookies.remove('minimize')
+        // console.log(Cookies.get().minimize)
+        if(countAlarm == 0){
+          if(Cookies.get().minimize == "true"){
+            $(document).find('.minimize').parent().hide()
+            $(".alarmBadge").show()
+          } else {
+            $(document).find('.minimize').parent().show()
+            $(".alarmBadge").hide()
+          }
+        }
         notifyAlarm.update('message', alarmMsg)
       }
     }
@@ -338,7 +393,7 @@
           align: "right"
         },
         delay: 0,
-        template: '<div data-notify="container" class="notifyKeep col-xs-11 col-sm-4 alert alert-{0}" role="alert">' +
+        template: '<div data-notify="container" class="notifyKeep col-xs-11 col-sm-4 alert alert-{0}" role="alert" style="max-height:200px; @media (min-width:200px){overflow-y: scroll;}">' +
                     '<button type="button" aria-hidden="true" class="close minimize" style="width: 20px; border: 1px solid black; color: white">-</button>' +
                     '<span data-notify="icon"></span> ' +
                     '<span data-notify="title">{1}</span> ' +
@@ -358,13 +413,18 @@
     e.preventDefault()
     $(this).parent().hide()
     $(".alarmBadge").show()
+    Cookies.set('minimize', true)
+    // console.log(Cookies.get().minimize)
   });  
   $(".alarmBadge").click(function (e) { 
     e.preventDefault()
     // notifyKeep()
     $(document).find('.minimize').parent().show()
     $(".alarmBadge").hide()
+    Cookies.set('minimize', false)
+    // console.log(Cookies.get().minimize)
   });
+  // $('.notifyKeep').draggable();
 </script>
 
 </body>

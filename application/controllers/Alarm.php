@@ -40,9 +40,9 @@ class Alarm extends CI_Controller {
 		$this->alarm();
 	}
 
-	public function alarm()
+	public function alarm($tag = false)
 	{
-		$data['title'] = "ERROR / ALARM";
+		$data['title'] = "ALARM";
 		$data['title_icon'] = "fa-warning text-red";
 		$data['url'] = base_url();
 		$data['hmi'] = base_url('assets/images/hmi/');
@@ -57,6 +57,18 @@ class Alarm extends CI_Controller {
 			array_push($data['position'], '#'.$t->element.'{left:'.$t->x.'px; top:'.$t->y.'px; z-index:'.$t->z.'; color:'.$t->color.';}');
 		}
 		$data['line'] = $this->alarm_model->get_all_line()->result();
+		if($tag){
+			$split = str_split($tag);
+			if(count($split) == 4){
+				$data['tag'] = true;
+				$data['selected_line'] = $split[0].$split[1];
+				$data['selected_machine'] = $split[2].$split[3];
+			} else {
+				$data['tag'] = false;
+			}
+		} else {
+			$data['tag'] = false;
+		}
 		$this->template->display('content/alarm', $data);
 	}
 
@@ -66,7 +78,7 @@ class Alarm extends CI_Controller {
             'upload_path' => "./uploads/",
             'allowed_types' => "xlsx",
             'overwrite' => TRUE,
-            'max_size' => "5120000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+            'max_size' => "512000000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
         );
         $this->load->library('upload', $config);
         $this->upload->initialize($config);
@@ -79,9 +91,12 @@ class Alarm extends CI_Controller {
 			foreach($sheetData as $key=>$row){
 				if($key > 0){
 					array_push($data, array(
-					'code'=>$row[0],
-					'note'=>$row[1],
-					'action'=>nl2br($row[2]),
+						'code'=>str_replace('.','_',$row[0]),
+						'note'=>$row[1],
+						'action'=>nl2br($row[2]),
+						'`line.id`'=>$row[3],
+						'`machine.id`'=>$row[4],
+						'`part.id`'=>$row[5],
 					));
 				}
 			}
@@ -107,7 +122,11 @@ class Alarm extends CI_Controller {
 		$code = $this->input->post('code');
 		$machine = $this->alarm_model->get_machine_by_code($code)->row();
 		$date = date('Y-m-d 00:00:00', strtotime('-7 days'));
-		$data = $this->alarm_model->get_history_alarm_by_line_machine($machine->line, $machine->id, $date)->result();
+		if($code != "5aa5"){
+			$data = $this->alarm_model->get_history_alarm_by_line_machine($machine->line, $machine->id, $date)->result();
+		} else {
+			$data = $this->alarm_model->get_history_alarm_by_line_all_machine($machine->line, $date)->result();
+		}
 		echo json_encode($data);
 	}
 

@@ -37,18 +37,27 @@
   }
   @media(max-width:916px){
     .content{
-      overflow-x: scroll
+      overflow-x: scroll;
+      padding: 0px;
     }
 
   }
 </style>
 <div class="box-body">
-  <div class="row parent-hmi">
+  <!-- <div class="row parent-hmi"> -->
+  <div class="row">
     <style>
+      .box{
+        min-width: 480px;
+      }
+      .box-body{
+        min-width: 480px;
+      }
       .parent-hmi{
         margin: 0;
         padding: 0;
         text-align: center;
+        /* height: auto; */
       }
       .hmi{
         position: relative;
@@ -57,9 +66,11 @@
         background-repeat: no-repeat;
         background-color: #dddddd;
         width: 898px;
-        min-height: 684px;
+        /* min-height: 684px; */
         height: 684px;
         border: 1px solid grey;
+        /* transform: scale(0.5,0.5);
+        transform-origin: 50% 0%; */
       }
       .image-symbol{
         position: absolute;
@@ -81,109 +92,61 @@
     </div>
   </div>
 </div>
-<!-- <div class="box-body">
-  <div class="row parent-hmi">
-    <div class="col-xs-12 col-md-12 parent-hmi">
 
-      <div class="hmi">
-        <div class="col-sm-12 parent-line">
-          <div class="col-sm-2 line-name">5A</div>
-          <a href="<?=$url?>line/a">
-          <div class="col-sm-8 line-scada">
-            <div class="col-sm-3 machine">
-              Mesin 1
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 2
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 3
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 4
-            </div>                      
-          </div>
-          </a>
-          <div class="col-sm-2 line-indikator">
-              <img width="80px" src="<?=$url?>assets/images/indicatorgreen.png?1"/>
-          </div>
-        </div>
-        
-        <div class="col-sm-12 parent-line">
-          <div class="col-sm-2 line-name">2A</div>
-          <div class="col-sm-8 line-scada">
-            <div class="col-sm-3 machine">
-              Mesin 1
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 2
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 3
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 4
-            </div>                      
-          </div>
-          <div class="col-sm-2 line-indikator">
-              <img class="line-indikator-2" width="80px" src="<?=$url?>assets/images/indicatorred.png?1"/>
-              <img class="line-indikator-2" width="80px" src="<?=$url?>assets/images/indicatorgrey.png" style="display:none"/>
-          </div>
-        </div>
-        
-        <div class="col-sm-12 parent-line">
-          <div class="col-sm-2 line-name">C</div>
-          <div class="col-sm-8 line-scada">
-            <div class="col-sm-3 machine">
-              Mesin 1
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 2
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 3
-            </div>                      
-            <div class="col-sm-3 machine">
-              Mesin 4
-            </div>                      
-          </div>
-          <div class="col-sm-2 line-indikator">
-              <img class="line-indikator-3" width="80px" src="<?=$url?>assets/images/indicatorred.png?1"/>
-              <img class="line-indikator-3" width="80px" src="<?=$url?>assets/images/indicatorgrey.png" style="display:none"/>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</div>
-/.box-body -->
-
-
+<script>
+  // var oldWidth = $(window).width()
+  // $(document).ready(function () {    
+  // if($(window).width() < 916){
+  //     scale = ($(window).width() - 20)/916
+  //     $('.hmi').css('transform', 'scale('+scale+')')
+  //     $('.hmi').css('transform-origin', 52-(scale*100)+'% 0%')
+  //       // $('.hmi').css('transform-origin', '50% 0%')
+  //     $('.hmi').parent().width(961*scale)
+  //     $('.hmi').parent().height(684*scale)
+  //   }
+  //   $(window).resize(function() {
+  //     newWidth = $(window).width()
+  //     if(newWidth < 916){
+  //       scale = (newWidth - 20)/916
+  //       $('.hmi').css('transform', 'scale('+scale+')')
+  //       $('.hmi').css('transform-origin', 52-(scale*100)+'% 0%')
+  //       // $('.hmi').css('transform-origin', '50% 0%')
+  //     $('.hmi').parent().width(961*scale)
+  //     $('.hmi').parent().height(684*scale)
+  //     } else {
+  //       $('.hmi').css('transform', 'scale(1)')
+  //       // $('.hmi').css('transform-origin', '1 1')
+  //       $('.hmi').parent().width(961)
+  //       $('.hmi').parent().height(684)
+  //     }
+  //   })
+  // })
+</script>
 <script>
   wsScada5a = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
   wsScada5a.onerror = function(error) {console.log('Error detected: ' + error)}
   wsScada5a.onopen = function(){console.log('websocket wsScada5a connect');/*ws.send("websocket connect");*/}
   wsScada5a.onclose = function(){console.log('websocket wsScada5a disconnect')}
-  var indicator5a = false
+  var indicatorScada5a = false
+  var tagUrlScada5a
   wsScada5a.onmessage = function(event){
     var payload = $.parseJSON(event.data);
+    // console.log(payload[0])
     if(payload.length == 0){
-      $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png")
-      indicator5a = false
+      // $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png?<?=rand(1,1000)?>")
+      indicatorScada5a = false
     }
     else {
-      indicator5a = true
+      indicatorScada5a = true
     }
   }
   toggle5aScada()
   function toggle5aScada(){
     setTimeout(() => {
-      if(indicator5a){
-        $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a_red.png")
+      if(indicatorScada5a){
+        $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a_red.png?<?=rand(1,1000)?>")
         setTimeout(() => {
-          $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png")
+          $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png?<?=rand(1,1000)?>")
         }, 500);
       }
       setTimeout(() => {
@@ -193,18 +156,15 @@
   }
   $('#line_5a').click(function (e) { 
     e.preventDefault()
-    if(indicator5a){
-        window.location.replace("<?=$url?>alarm")
-    } else {
-      return false
-    }
+    window.location.replace("<?=$url?>press_shop/line_5a")
   });
   ////////////////////////////////////////////////////////////////////////////////////////
   wsSymptom5am1 = new WebSocket("ws://localhost:1880/ws/5am1")
   wsSymptom5am1.onerror = function(error) {console.log('Error detected: ' + error)}
   wsSymptom5am1.onopen = function(){console.log('websocket wsSymptom5am1 connect')}
   wsSymptom5am1.onclose = function(){console.log('websocket wsSymptom5am1 disconnect')}
-  var indikator5am1 = false
+  var indikatorSymptom5am1 = false
+  var tagUrlSymptom5am1 = "5am1"
   wsSymptom5am1.onmessage = function(event){
     var payload = $.parseJSON(event.data);
     // console.log(diesNew)
@@ -224,36 +184,34 @@
     v5am14 = payload.motor_4.vibration
     
     if(t5am11 > tLim || t5am12 > tLim || t5am13 > tLim || t5am14 > tLim){
-      indikator5am1 = true
+      indikatorSymptom5am1 = true
     } else {
-      $("#symptom_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgreen.png")
-      indikator5am1 = false
+      $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgreen.png?<?=rand(1,1000)?>")
+      indikatorSymptom5am1 = false
     }
   }
   toggle5aSymptom()
   function toggle5aSymptom(){
     setTimeout(() => {
-      if(indikator5am1){
+      if(indikatorSymptom5am1){
         // console.log('a')
-        $("#symptom_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorred.png")
+        $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorred.png?<?=rand(1,1000)?>")
         setTimeout(() => {
-          $("#symptom_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgrey.png")
+          $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgrey.png?<?=rand(1,1000)?>")
         }, 500);
+      } else {
+        $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgreen.png?<?=rand(1,1000)?>")        
       }
       setTimeout(() => {
         toggle5aSymptom()
       }, 500);
-    }, 500);
+    }, 200);
   }
-  $('#symptom_5a').click(function (e) { 
+  $('#symptom_5am1').click(function (e) { 
     e.preventDefault()
-    if(indikator5am1){
-        window.location.replace("<?=$url?>symptom")
-    } else {
-      return false
-    }
+      window.location.replace("<?=$url?>symptom/"+tagUrlSymptom5am1)
   });
-
+  
 </script>
 <script>
   var editMode = false;

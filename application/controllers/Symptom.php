@@ -24,7 +24,7 @@ class Symptom extends CI_Controller {
 		$this->symptom();
 	}
 
-	public function symptom()
+	public function symptom($tag = false)
 	{
 		$data['title'] = "SYMPTOM";
 		$data['title_icon'] = "fa-bar-chart";
@@ -42,6 +42,18 @@ class Symptom extends CI_Controller {
 		}
 
 		$data['line'] = $this->symptom_model->get_all_line()->result();
+		if($tag){
+			$split = str_split($tag);
+			if(count($split) == 4){
+				$data['tag'] = true;
+				$data['selected_line'] = $split[0].$split[1];
+				$data['selected_machine'] = $split[2].$split[3];
+			}else{
+				$data['tag'] = false;
+			}
+		} else {
+			$data['tag'] = false;
+		}
 		$this->template->display('content/symptom', $data);
 	}
 

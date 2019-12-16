@@ -72,6 +72,10 @@
         </li>
       </ul>
       <ul class="nav navbar-nav pull-right">
+        <li style="font-size: 2.5em; width: 180px">        
+          <input type="checkbox" style="width:0.5em; height: 0.5em" id="autoUpdate">
+          <span style="font-size: 20px !important;">Auto update</span>
+        </li>
         <li>        
           <a class="no-padding" data-toggle="modal" href='#actionAlarmModal'><i class="fa fa-gear fa-3x" style="margin:4px;"></i></a>
         </li>
@@ -157,11 +161,15 @@
         $('.table-body').children().remove();
         var row
         $.each(response, function (key, value) {
-          substract = new Date(new Date(value.end_timestamp) - new Date(value.timestamp) - (60*60*7*1000))
-                date = new Date(substract)
-                duration = ('00' + date.getHours()).slice(-2) + ':' + 
-                    ('00' + date.getMinutes()).slice(-2) + ':' + 
-                    ('00' + date.getSeconds()).slice(-2)
+          if(value.end_timestamp){
+            substract = new Date(new Date(value.end_timestamp) - new Date(value.timestamp) - (60*60*7*1000))
+                  date = new Date(substract)
+                  duration = ('00' + date.getHours()).slice(-2) + ':' + 
+                      ('00' + date.getMinutes()).slice(-2) + ':' + 
+                      ('00' + date.getSeconds()).slice(-2)
+          } else {
+            duration= "<span class='text-red'>sedang berlangsung</span>"
+          }
           row += '<tr height="36">'+
                   '<td scope="row">'+value.timestamp+'</td>'+
                   '<td>'+duration+'</td>'+
@@ -279,7 +287,17 @@
         ]
       });
     }
+    
+    
 </script>
+<?php if($tag){?>
+<script>
+  $(document).ready(function () {
+    $('#line').val('<?=$selected_line?>')
+    $(`.machine[data-val='<?=$selected_machine?>']`).click()
+  });
+</script>
+<?php } ?>
 
 
 

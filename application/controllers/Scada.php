@@ -37,12 +37,12 @@ class Scada extends CI_Controller {
 		// $data['url'] = base_url();
 		// $data['circuit'] = base_url('assets/images/circuit/');
 		// $this->template->display('content/index', $data);
-		$this->shop();
+		$this->press_shop();
 	}
 
-	public function shop()
+	public function press_shop()
 	{
-		$data['title'] = "PRESS SHOP";
+		$data['title'] = "PRESS SHOP MONITORING";
 		$data['title_icon'] = "fa-home";
 		$data['url'] = base_url();
 		$data['hmi'] = base_url('assets/images/hmi/');
@@ -58,6 +58,27 @@ class Scada extends CI_Controller {
 			array_push($data['position'], '#'.$t->element.'{left:'.$t->x.'px; top:'.$t->y.'px; z-index:'.$t->z.'; color:'.$t->color.';}');
 		}
 		$this->template->display('content/shop', $data);
+	}
+
+	public function line_5a()
+	{
+		// $data['title'] = "PRESS SHOP MONITORING - <span class='text-green'>Line 5A</span>";
+		$data['title'] = "PRESS SHOP MONITORING";
+		$data['title_icon'] = "fa-home";
+		$data['url'] = base_url();
+		$data['hmi'] = base_url('assets/images/hmi/');
+		$data['images'] = $this->scada_model->get_images_5a()->result();
+		$data['symbol'] = $this->scada_model->get_symbol()->result();
+		$data['textbox'] = $this->scada_model->get_textbox()->result();
+		$data['position'] = [];
+		$data['line'] = $this->scada_model->get_all_line()->result();
+		foreach ($data['images'] as $s){
+			array_push($data['position'], '#'.$s->element.'{left:'.$s->x.'px; top:'.$s->y.'px; z-index:'.$s->z.';}');
+		}
+		foreach ($data['textbox'] as $t){
+			array_push($data['position'], '#'.$t->element.'{left:'.$t->x.'px; top:'.$t->y.'px; z-index:'.$t->z.'; color:'.$t->color.';}');
+		}
+		$this->template->display('content/line_5a', $data);
 	}
 
 	public function line($param)
