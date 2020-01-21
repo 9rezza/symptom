@@ -263,7 +263,7 @@
         yValueFormatString: "#####.##",
         toolTipContent: "{z}<br><span style='\"'color: red;'\"'>{name}</span>: {y}", 
         showInLegend: true,
-        name: "Motor1",
+        name: "UR",
         fillOpacity: .4,
         dataPoints: temperature1,
         markerType: null,
@@ -272,7 +272,7 @@
         color: "#3434df",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor2",
+        name: "UL",
         fillOpacity: .4,
         dataPoints: temperature2,
         markerType: null,
@@ -281,7 +281,7 @@
         color: "#267326",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor3",
+        name: "LR",
         fillOpacity: .4,
         dataPoints: temperature3,
         markerType: null,
@@ -290,7 +290,7 @@
         color: "#00cccc",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor4",
+        name: "LL",
         fillOpacity: .4,
         dataPoints: temperature4,
         markerType: null,
@@ -356,7 +356,7 @@
         yValueFormatString: "#####.##",
         toolTipContent: "{z}<br><span style='\"'color: red;'\"'>{name}</span>: {y}", 
         showInLegend: true,
-        name: "Motor1",
+        name: "UR",
         fillOpacity: .4,
         dataPoints: vibration1,
         markerType: null,
@@ -365,7 +365,7 @@
         color: "#3434df",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor2",
+        name: "UL",
         fillOpacity: .4,
         dataPoints: vibration2,
         markerType: null,
@@ -374,7 +374,7 @@
         color: "#267326",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor3",
+        name: "LR",
         fillOpacity: .4,
         dataPoints: vibration3,
         markerType: null,
@@ -383,7 +383,7 @@
         color: "#00cccc",
         yValueFormatString: "#####.##",
         showInLegend: true,
-        name: "Motor4",
+        name: "LL",
         fillOpacity: .4,
         dataPoints: vibration4,
         markerType: null,
@@ -485,15 +485,15 @@
           // console.log(date);
           // console.log(dateToday);
           if(date == dateToday){
-            if (ws.readyState) {
-              ws.close();
+            if (wsSymptom.readyState) {
+              wsSymptom.close();
               wsock(modul);
             } else {
               wsock(modul);
             }
           } else {
-            if (ws.readyState) {
-              ws.close();
+            if (wsSymptom.readyState) {
+              wsSymptom.close();
             }
             // $('#diesActive').html("");
             // tempChart.options.axisY.stripLines[0].value = null;
@@ -506,17 +506,20 @@
         }
       });      
     }
-    var ws = new Set();
+    var wsSymptom = new Set();
     function wsock(modul){
-      ws = new WebSocket("ws://localhost:1880/ws/"+modul)
-      ws.onerror = function(error) {console.log('Error detected: ' + error)}
-      ws.onopen = function(){console.log('websocket connect');/*ws.send("websocket connect");*/}
-      ws.onclose = function(){console.log('websocket disconnect')}
+      wsSymptom = new WebSocket("ws://localhost:1880/ws/"+modul)
+      wsSymptom.onerror = function(error) {console.log('Error detected: ' + error)}
+      wsSymptom.onopen = function(){console.log('symptom connect');/*ws.send("websocket connect");*/}
+      wsSymptom.onclose = function(){
+        console.log('symptom disconnect')
+        wsock(modul)
+      }
       var dies;
       var diesNew;
-      ws.onmessage = function(event){
+      wsSymptom.onmessage = function(event){
         var payload = $.parseJSON(event.data);
-        // console.log(payload);
+        console.log(payload);
         diesNew = payload.dies.code;
         if(dies == diesNew){
           // $('#diesActive').html(dies);
@@ -530,10 +533,14 @@
           
           tempChart.options.axisY.stripLines[0].value = parseInt(temperature_warning);
           tempChart.options.axisY.stripLines[1].value = parseInt(temperature_alarm);
-          tempChart.options.axisY.maximum = parseInt(temperature_alarm)*1.1;
+          if(temperature_alarm){
+            tempChart.options.axisY.maximum = parseInt(temperature_alarm)*1.1;
+          }          
           vibeChart.options.axisY.stripLines[0].value = parseInt(vibration_warning);
           vibeChart.options.axisY.stripLines[1].value = parseInt(vibration_alarm);
-          vibeChart.options.axisY.maximum = parseInt(vibration_alarm)*1.1;
+          if(vibration_alarm){
+            vibeChart.options.axisY.maximum = parseInt(vibration_alarm)*1.1;
+          }          
         }
         dies = diesNew;
         tempChart.options.data[0].dataPoints.push({y: parseFloat(payload.motor_1.temperature),z: payload.timestamp});

@@ -123,21 +123,29 @@
   // })
 </script>
 <script>
-  wsScada5a = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
-  wsScada5a.onerror = function(error) {console.log('Error detected: ' + error)}
-  wsScada5a.onopen = function(){console.log('websocket wsScada5a connect');/*ws.send("websocket connect");*/}
-  wsScada5a.onclose = function(){console.log('websocket wsScada5a disconnect')}
+  scada5a()
   var indicatorScada5a = false
   var tagUrlScada5a
-  wsScada5a.onmessage = function(event){
-    var payload = $.parseJSON(event.data);
-    // console.log(payload[0])
-    if(payload.length == 0){
-      // $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png?<?=rand(1,1000)?>")
-      indicatorScada5a = false
+  function scada5a(){
+    wsScada5a = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
+    wsScada5a.onerror = function(error) {console.log('Error detected: ' + error)}
+    wsScada5a.onopen = function(){console.log('wsScada5a connect');/*ws.send("websocket connect");*/}
+    wsScada5a.onclose = function(){
+      console.log('wsScada5a disconnect')
+      scada5a()
     }
-    else {
-      indicatorScada5a = true
+    // indicatorScada5a = false
+    // var tagUrlScada5a
+    wsScada5a.onmessage = function(event){
+      var payload = $.parseJSON(event.data);
+      // console.log(payload[0])
+      if(payload.length == 0){
+        // $("#line_5a").attr("src", "<?=$url?>assets/images/hmi/symptom//5a.png?<?=rand(1,1000)?>")
+        indicatorScada5a = false
+      }
+      else {
+        indicatorScada5a = true
+      }
     }
   }
   toggle5aScada()
@@ -159,35 +167,43 @@
     window.location.replace("<?=$url?>press_shop/line_5a")
   });
   ////////////////////////////////////////////////////////////////////////////////////////
-  wsSymptom5am1 = new WebSocket("ws://localhost:1880/ws/5am1")
-  wsSymptom5am1.onerror = function(error) {console.log('Error detected: ' + error)}
-  wsSymptom5am1.onopen = function(){console.log('websocket wsSymptom5am1 connect')}
-  wsSymptom5am1.onclose = function(){console.log('websocket wsSymptom5am1 disconnect')}
+  symptom5am1()
   var indikatorSymptom5am1 = false
   var tagUrlSymptom5am1 = "5am1"
-  wsSymptom5am1.onmessage = function(event){
-    var payload = $.parseJSON(event.data);
-    // console.log(diesNew)
-    temperature_alarm = payload.dies.temperature_alarm
-    vibration_alarm = payload.dies.vibration_alarm
-    
-    tLim = parseInt(temperature_alarm)
-    vLim = parseInt(vibration_alarm)
+  function symptom5am1(){
+    wsSymptom5am1 = new WebSocket("ws://localhost:1880/ws/5am1")
+    wsSymptom5am1.onerror = function(error) {console.log('Error detected: ' + error)}
+    wsSymptom5am1.onopen = function(){console.log('wsSymptom5am1 connect')}
+    wsSymptom5am1.onclose = function(){
+      console.log('wsSymptom5am1 disconnect')
+      symptom5am1()
+    }
+    // var indikatorSymptom5am1 = false
+    // var tagUrlSymptom5am1 = "5am1"
+    wsSymptom5am1.onmessage = function(event){
+      var payload = $.parseJSON(event.data);
+      // console.log(diesNew)
+      temperature_alarm = payload.dies.temperature_alarm
+      vibration_alarm = payload.dies.vibration_alarm
+      
+      tLim = parseInt(temperature_alarm)
+      vLim = parseInt(vibration_alarm)
 
-    t5am11 = payload.motor_1.temperature
-    v5am11 = payload.motor_1.vibration
-    t5am12 = payload.motor_2.temperature
-    v5am12 = payload.motor_2.vibration
-    t5am13 = payload.motor_3.temperature
-    v5am13 = payload.motor_3.vibration
-    t5am14 = payload.motor_4.temperature
-    v5am14 = payload.motor_4.vibration
-    
-    if(t5am11 > tLim || t5am12 > tLim || t5am13 > tLim || t5am14 > tLim){
-      indikatorSymptom5am1 = true
-    } else {
-      $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgreen.png?<?=rand(1,1000)?>")
-      indikatorSymptom5am1 = false
+      t5am11 = payload.motor_1.temperature
+      v5am11 = payload.motor_1.vibration
+      t5am12 = payload.motor_2.temperature
+      v5am12 = payload.motor_2.vibration
+      t5am13 = payload.motor_3.temperature
+      v5am13 = payload.motor_3.vibration
+      t5am14 = payload.motor_4.temperature
+      v5am14 = payload.motor_4.vibration
+      
+      if(t5am11 > tLim || t5am12 > tLim || t5am13 > tLim || t5am14 > tLim){
+        indikatorSymptom5am1 = true
+      } else {
+        $("#symptom_5am1").attr("src", "<?=$url?>assets/images/hmi/symptom//indicatorgreen.png?<?=rand(1,1000)?>")
+        indikatorSymptom5am1 = false
+      }
     }
   }
   toggle5aSymptom()

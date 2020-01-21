@@ -1,5 +1,5 @@
-<!-- <link rel="stylesheet" href="<?=$url?>vendor/datatables/css/jquery.datatables.min.css"> -->
-<link rel="stylesheet" href="http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="<?=$url?>vendor/datatables/css/jquery.datatables.min.css">
+<!-- <link rel="stylesheet" href="http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"> -->
 
 <style>
   .no-margin{
@@ -57,6 +57,7 @@
         <li><a class="machine" href="#" data-val="a3">PRESS</a></li>
         <li><a class="machine" href="#" data-val="a4">PALLETIZER</a></li>
         <li><a class="machine" href="#" data-val="a5">LOP</a></li>
+        <li><a class="machine" href="#" data-val="a6">ALL</a></li>
         <!-- <li><a href="#">ALL</a></li> -->
         <li class="dropdown hidden">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <span class="caret"></span></a>
@@ -138,10 +139,10 @@
 </div>
 
 
-<script src="http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-<!-- <script src="<?=$url?>vendor/datatables/js/jquery.dataTables.min.js"></script> -->
+<!-- <script src="http://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script> -->
+<script src="<?=$url?>vendor/datatables/js/jquery.dataTables.min.js"></script>
 <script>
-  $('.machine').click(function (e) { 
+  $('.machine').click(function (e) {
     e.preventDefault()
     $.blockUI();
     $('.machine').removeClass('selected')
@@ -156,7 +157,7 @@
       data: {code:code},
       dataType: "JSON",
       success: function (response) {
-        console.log(response)
+        // console.log(response)
         lengthData = response.length
         $('.table-body').children().remove();
         var row
@@ -273,22 +274,20 @@
   /////////////////////////////////////////////////////////////////////////////////////////////////////////
   $(document).ready(function () {
   });
-    // $('#alarmTable').DataTable();
-    dtAlarm();
-    function dtAlarm(){
-      $('#alarmTable').dataTable({
-        order: [[0, 'desc']],
-        "columns": [
-          null,
-          {"orderable":false,"searchable":false},
-          {"orderable":false},
-          {"orderable":false},
-          {"orderable":false}
-        ]
-      });
-    }
-    
-    
+  // $('#alarmTable').DataTable();
+  dtAlarm();
+  function dtAlarm(){
+    $('#alarmTable').dataTable({
+      order: [[0, 'desc']],
+      "columns": [
+        null,
+        {"orderable":false,"searchable":false},
+        {"orderable":false},
+        {"orderable":false},
+        {"orderable":false}
+      ]
+    });
+  }
 </script>
 <?php if($tag){?>
 <script>

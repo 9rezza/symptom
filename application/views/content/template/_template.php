@@ -274,94 +274,104 @@
 
 <script>
   var alarmMsg
-  wsAlarm = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
-  wsAlarm.onerror = function(error) {console.log('Error detected: ' + error)}
-  wsAlarm.onopen = function(){console.log('websocket connect');/*ws.send("websocket connect");*/}
-  wsAlarm.onclose = function(){console.log('websocket disconnect')}
-  var dies
-  var diesNew
-  var payloadOld
-  var countAlarm = 0
-  wsAlarm.onmessage = function(event){
-    var payload = $.parseJSON(event.data);
-    // console.log(payload);
-    if(payload.length <= 0){
-      if(countAlarm != payload.length){
-        $(document).find('.minimize').parent().hide()
-        $(".alarmBadge").hide()
-      }
-    } else {
-      i = 1
-      alarmMsg = ""
-      ///////////////////////////////////////////////////////////////
-      var checkPayload = false
-      if(countAlarm == payload.length){ //cek jumlah array
-        $.each(payload, function (key, value) {
-          if(payloadOld[key].code == value.code){
-            checkPayload = true //jumlah sama tapi isi array berubah
-            return false
-          }
-        })
-      }
-      // console.log(checkPayload)
-      // console.log(payload)
-      ////////////////////////////////////////////////////////////////
-      if(checkPayload){
-        $.each(payload, function (key, value) {
-          substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
-                date = new Date(substract)
-                duration = ('00' + date.getHours()).slice(-2) + ':' +
-                    ('00' + date.getMinutes()).slice(-2) + ':' +
-                    ('00' + date.getSeconds()).slice(-2)
-          $('.duration-'+value.code).html('('+duration+')')
-        })
-      } else {
-        $.each(payload, function (key, value) {
-          // console.log(key)
-          substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
-                date = new Date(substract)
-                duration = ('00' + date.getHours()).slice(-2) + ':' + 
-                    ('00' + date.getMinutes()).slice(-2) + ':' + 
-                    ('00' + date.getSeconds()).slice(-2)
-          let note = value.note ? value.note : ""
-          alarmMsg += "<div class='row row-eq-height '>"
-          alarmMsg += "<div class='col-sm-1 float-left text-right no-padding'>"+
-                        "<span class='code-i'>"+i+". </span> "+
-                      "</div>"
-          alarmMsg += "<div class='col-sm-7 float-left text-left no-padding'>"+
-                        "<span class='code'> "+value.code+"</span><br/><span class='note'>"+note+"</span> "+
-                      "</div>"
-          alarmMsg += "<div class='col-sm-4 float-right'>"+
-                        "<span class='duration duration-"+value.code+"'>("+duration+")</span> "+
-                        "<span class='fa fa-caret-up  caret-"+value.code+"' style='font-size: 1.2em' onClick='toggleAction("+'"'+value.code+'"'+")'></span>"+
-                      "</div>"
-          alarmMsg += "<div class='col-sm-10 col-sm-offset-2 float-left text-left no-padding text-grey action-"+value.code+"' style='display: none; color: #ffff00'>"+
-                        "<span class='code'> "+(value.action ? value.action : "")+"</span> "+
-                      "</div>"
-          alarmMsg += "</div>"
-          if($('#autoUpdate').is(":checked")){
-            $('.machine.selected').click()
-          }
-          console.log($('#autoUpdate').is(":checked"))
-          i++
-        });
-        // $.notifyClose()
-        // Cookies.remove('minimize')
-        // console.log(Cookies.get().minimize)
-        if(countAlarm == 0){
-          if(Cookies.get().minimize == "true"){
-            $(document).find('.minimize').parent().hide()
-            $(".alarmBadge").show()
-          } else {
-            $(document).find('.minimize').parent().show()
-            $(".alarmBadge").hide()
-          }
-        }
-        notifyAlarm.update('message', alarmMsg)
-      }
+  alarm()
+  function alarm(){
+    wsAlarm = new WebSocket("ws://localhost:1880/ws/alarm_5aa1")
+    wsAlarm.onerror = function(error) {console.log('Error detected: ' + error)}
+    wsAlarm.onopen = function(){console.log('alarm connect');/*ws.send("websocket connect");*/}
+    wsAlarm.onclose = function(){
+      console.log('alarm disconnect')
+      alarm()
     }
-    countAlarm = payload.length
-    payloadOld = payload
+    var dies
+    var diesNew
+    var payloadOld
+    var countAlarm = 0
+    wsAlarm.onmessage = function(event){
+      var payload = $.parseJSON(event.data);
+      // console.log(payload);
+      if(payload.length <= 0){
+        if(countAlarm != payload.length){
+          $('.machine.selected').click()
+          $(document).find('.minimize').parent().hide()
+          $(".alarmBadge").hide()
+        }
+      } else {
+        i = 1
+        alarmMsg = ""
+        ///////////////////////////////////////////////////////////////
+        var checkPayload = false
+        if(countAlarm == payload.length){ //cek jumlah array
+          $.each(payload, function (key, value) {
+            if(payloadOld[key].code == value.code){
+              checkPayload = true //jumlah sama tapi isi array berubah
+              return false
+            }
+          })
+        }
+        // console.log(checkPayload)
+        // console.log(payload)
+        ////////////////////////////////////////////////////////////////
+        if(checkPayload){
+          $.each(payload, function (key, value) {
+            substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
+                  date = new Date(substract)
+                  duration = ('00' + date.getHours()).slice(-2) + ':' +
+                      ('00' + date.getMinutes()).slice(-2) + ':' +
+                      ('00' + date.getSeconds()).slice(-2)
+            $('.duration-'+value.code).html('('+duration+')')
+          })
+        } else {
+          $.each(payload, function (key, value) {
+            // console.log(key)
+            substract = new Date(new Date().getTime() - new Date(value.timestamp) - (1000*60*60*7))
+                  date = new Date(substract)
+                  duration = ('00' + date.getHours()).slice(-2) + ':' + 
+                      ('00' + date.getMinutes()).slice(-2) + ':' + 
+                      ('00' + date.getSeconds()).slice(-2)
+            let note = value.note ? value.note : ""
+            alarmMsg += "<div class='row row-eq-height '>"
+            alarmMsg += "<div class='col-sm-1 float-left text-right no-padding'>"+
+                          "<span class='code-i'>"+i+". </span> "+
+                        "</div>"
+            alarmMsg += "<div class='col-sm-7 float-left text-left no-padding'>"+
+                          "<span class='code'> "+value.code+"</span><br/><span class='note'>"+note+"</span> "+
+                        "</div>"
+            alarmMsg += "<div class='col-sm-4 float-right'>"+
+                          "<span class='duration duration-"+value.code+"'>("+duration+")</span> "+
+                          "<span class='fa fa-caret-up  caret-"+value.code+"' style='font-size: 1.2em' onClick='toggleAction("+'"'+value.code+'"'+")'></span>"+
+                        "</div>"
+            alarmMsg += "<div class='col-sm-10 col-sm-offset-2 float-left text-left no-padding text-grey action-"+value.code+"' style='display: none; color: #ffff00'>"+
+                          "<span class='code'> "+(value.action ? value.action : "")+"</span> "+
+                        "</div>"
+            alarmMsg += "</div>"
+            if($('#autoUpdate').is(":checked")){
+              $('.machine.selected').click()
+            }
+            // console.log($('#autoUpdate').is(":checked"))
+            i++
+          });
+          // $.notifyClose()
+          // Cookies.remove('minimize')
+          // console.log(Cookies.get().minimize)
+          if(countAlarm == 0){
+            if($('#autoUpdate').is(":checked")){
+              $('.machine.selected').click()
+            }
+            if(Cookies.get().minimize == "true"){
+              $(document).find('.minimize').parent().hide()
+              $(".alarmBadge").show()
+            } else {
+              $(document).find('.minimize').parent().show()
+              $(".alarmBadge").hide()
+            }
+          }
+          notifyAlarm.update('message', alarmMsg)
+        }
+      }
+      countAlarm = payload.length
+      payloadOld = payload
+    }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////// 
   function toggleAction(id){
@@ -394,7 +404,7 @@
         },
         delay: 0,
         template: '<div data-notify="container" class="notifyKeep col-xs-11 col-sm-4 alert alert-{0}" role="alert" style="max-height:200px; @media (min-width:200px){overflow-y: scroll;}">' +
-                    '<button type="button" aria-hidden="true" class="close minimize" style="width: 20px; border: 1px solid black; color: white">-</button>' +
+                    '<button type="button" aria-hidden="true" class="close minimize" style=" width: 30px; border: 3px solid white; color: white; opacity:.7">-</button>' +
                     '<span data-notify="icon"></span> ' +
                     '<span data-notify="title">{1}</span> ' +
                     '<span data-notify="message">{2}</span>' +
