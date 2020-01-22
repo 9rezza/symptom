@@ -108,6 +108,62 @@
     }
 
   }
+  /* //////////////////////////////////////////////////////////////////////////////// */
+  .alarmBadge{
+    position: fixed;
+    z-index: 9999;
+    border: 2px solid #db3c40;
+    border-radius: 50%;
+    background-color: #db3c40;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    vertical-align: center;
+    color: white;
+    top: 20px;
+    right: 20px;
+    display:none;
+    font-size: 22px;
+  }
+  .alarmBadge :hover{
+    cursor: pointer;
+  }
+  .alarmBadgeContent{
+    vertical-align: center;
+  }
+  #alarmBadgeCount{
+  }
+  .alert-danger{
+    background-color: #db3c40 !important;
+    /* background-color: #dd4b39 !important; */
+  }
+  .note{
+    left: 20px;
+    color: #39ff09;
+  }
+  .notifyKeep{
+    max-height: 150px;
+    overflow-y: scroll;
+  }
+  .notifyKeep::-webkit-scrollbar-track {
+    border: 1px solid #ff2424;
+    padding: 2px 0;
+    background-color: #7c1f03;
+  }
+
+  .notifyKeep::-webkit-scrollbar {
+    width: 20px;
+  }
+
+  .notifyKeep::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #e31a0f;
+    border: 1px solid #ff9f9f;
+  }
+  @media(min-height: 480px){
+
+  }
 </style>
 <div class="content-wrapper bg-white">
   <!-- Content Header (Page header) -->
@@ -124,7 +180,7 @@
   </section>
 
   <!-- Main content -->
-  <section class="content">
+  <section class="content" style="min-width:1280px;">
 
     <div class="row">
       <div class="col-sm-12">
@@ -155,64 +211,6 @@
             </div>
           </div>
           <!-- /.box-header -->
-          
-          <style>
-            .alarmBadge{
-              position: fixed;
-              z-index: 9999;
-              border: 2px solid #db3c40;
-              border-radius: 50%;
-              background-color: #db3c40;
-              width: 35px;
-              height: 35px;
-              text-align: center;
-              vertical-align: center;
-              color: white;
-              top: 20px;
-              right: 20px;
-              display:none;
-              font-size: 22px;
-            }
-            .alarmBadge :hover{
-              cursor: pointer;
-            }
-            .alarmBadgeContent{
-              vertical-align: center;
-            }
-            #alarmBadgeCount{
-            }
-            .alert-danger{
-              background-color: #db3c40 !important;
-              /* background-color: #dd4b39 !important; */
-            }
-            .note{
-              left: 20px;
-              color: #39ff09;
-            }
-            .notifyKeep{
-              max-height: 150px;
-              overflow-y: scroll;
-            }
-            .notifyKeep::-webkit-scrollbar-track {
-              border: 1px solid #ff2424;
-              padding: 2px 0;
-              background-color: #7c1f03;
-            }
-
-            .notifyKeep::-webkit-scrollbar {
-              width: 20px;
-            }
-
-            .notifyKeep::-webkit-scrollbar-thumb {
-              border-radius: 10px;
-              box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-              background-color: #e31a0f;
-              border: 1px solid #ff9f9f;
-            }
-            @media(min-height: 480px){
-
-            }
-          </style>
           <div class="alarmBadge">
             <div class="alarmBadgeContent">
               <i class="fa fa-warning"></i>
@@ -271,7 +269,33 @@
 <script src="<?=$url?>vendor/moment-js/moment.js"></script>
 <script src="<?=$url?>vendor/moment-js/locale/id.js"></script>
 <script src="<?=$url?>vendor/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+<script>
+  $(document).ready(function () {
+    if($(window).width() < 1280){
+      scale = ($(window).width())/1280
+      
+      $('.content').css('transform', 'scale('+scale+')')
+      $('.content').css('transform-origin', '0% 0%')
+      
+      $('.content').parent().height($('.content').height()*scale)
+    }
+    $(window).resize(function() {
+      newWidth = $(window).width()
+      if(newWidth < 1280){
+        scale = ($(window).width())/1280
+        $('.content').css('transform', 'scale('+scale+')')
+        $('.content').css('transform-origin', '0% 0%')
 
+        $('.content').parent().height($('.content').height()*scale)
+      } else { 
+        $('.content').css('transform', 'scale(1)')
+        $('.content').css('transform-origin', '0% 0%')
+
+        $('.content').parent().height($('.content').height()*scale)
+      }
+    })
+  })
+</script>
 <script>
   var alarmMsg
   alarm()

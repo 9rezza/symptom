@@ -2,6 +2,18 @@
 <!-- <link rel="stylesheet" href="http://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"> -->
 
 <style>
+  @media (max-width: 1024px){
+    .navbar-nav>li {
+        float: left;
+    }
+    .navbar-nav {
+        float: left;
+        margin: 0;
+    }
+    .bg-primary{
+      float: left;
+    }
+  }
   .no-margin{
     margin: 0;
   }
@@ -30,6 +42,14 @@
   .table tbody tr{
     min-height: 36px;
   }
+  .machine{
+    height: 50px;
+    vertical-align: middle;
+  }
+  .right-nav li, .right-nav a{
+    height: 50px;
+    vertical-align: middle;
+  }
 </style>
 <style>
   .bg-primary .selected{
@@ -49,9 +69,9 @@
       </select>
     </div>
   </div>
-  <div class="col-sm-12 bg-primary no-padding" style="margin-bottom: 20px">
+  <div class="col-sm-12 bg-primary no-padding" style="margin-bottom: 20px; z-index: 2">
     <div>
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav" style="height: 50px">
         <li><a class="machine" href="#" data-val="a1">SHEET FEEDER</a></li>
         <li><a class="machine" href="#" data-val="a2">ROBOT</a></li>
         <li><a class="machine" href="#" data-val="a3">PRESS</a></li>
@@ -72,8 +92,8 @@
           </ul>
         </li>
       </ul>
-      <ul class="nav navbar-nav pull-right">
-        <li style="font-size: 2.5em; width: 180px">        
+      <ul class="nav navbar-nav pull-right right-nav" style="height: 50px">
+        <li style="font-size: 2.5em; width: 180px; line-height: 100%;">        
           <input type="checkbox" style="width:0.5em; height: 0.5em" id="autoUpdate">
           <span style="font-size: 20px !important;">Auto update</span>
         </li>
