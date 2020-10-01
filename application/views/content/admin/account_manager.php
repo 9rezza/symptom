@@ -23,8 +23,6 @@
     float: left;
   }
 
-  $errorMsgColor: #ff0000;
-
   .error {
     color: red !important;
   }

@@ -65,10 +65,10 @@ class Symptom extends CI_Controller {
 		$today = date("Y-m-d h:i:s", strtotime('-6 hours'));
 		$initial = date("Y-m-d 06:00:00", strtotime($today));
 		$end = date("Y-m-d 06:00:00", strtotime($today.'+1 day'));
-		$data["motor_1"] = $this->symptom_model->get_data_today($modul."1",$initial,$end)->result();
-		$data["motor_2"] = $this->symptom_model->get_data_today($modul."2",$initial,$end)->result();
-		$data["motor_3"] = $this->symptom_model->get_data_today($modul."3",$initial,$end)->result();
-		$data["motor_4"] = $this->symptom_model->get_data_today($modul."4",$initial,$end)->result();
+		$data["motor_UL"] = $this->symptom_model->get_data_by_day($modul."UL",$initial,$end)->result();
+		$data["motor_UR"] = $this->symptom_model->get_data_by_day($modul."UR",$initial,$end)->result();
+		$data["motor_LL"] = $this->symptom_model->get_data_by_day($modul."LL",$initial,$end)->result();
+		$data["motor_LR"] = $this->symptom_model->get_data_by_day($modul."LR",$initial,$end)->result();
 		echo json_encode($data);
 	}
 
@@ -80,10 +80,10 @@ class Symptom extends CI_Controller {
 		$date = date("Y-m-d h:i:s", strtotime($this->input->post('date')));
 		$initial = date("Y-m-d 06:00:00", strtotime($date));
 		$end = date("Y-m-d 06:00:00", strtotime($date.'+1 day'));
-		$data["motor_1"] = $this->symptom_model->get_data_today($modul."1",$initial,$end)->result();
-		$data["motor_2"] = $this->symptom_model->get_data_today($modul."2",$initial,$end)->result();
-		$data["motor_3"] = $this->symptom_model->get_data_today($modul."3",$initial,$end)->result();
-		$data["motor_4"] = $this->symptom_model->get_data_today($modul."4",$initial,$end)->result();
+		$data["motor_UL"] = $this->symptom_model->get_data_by_day($modul."UL",$initial,$end)->result();
+		$data["motor_UR"] = $this->symptom_model->get_data_by_day($modul."UR",$initial,$end)->result();
+		$data["motor_LL"] = $this->symptom_model->get_data_by_day($modul."LL",$initial,$end)->result();
+		$data["motor_LR"] = $this->symptom_model->get_data_by_day($modul."LR",$initial,$end)->result();
 		echo json_encode($data);
 	}
 
